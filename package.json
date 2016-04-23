@@ -11,6 +11,9 @@
   "repository": "",
   "author": "Chris Zioutas",
   "dependencies": {
+    "http-post": "^0.1.1",
+    "random-js": "^1.0.8",
+    "randomstring": "^1.1.4",
     "redis": "^2.6.0-1"
   }
 }

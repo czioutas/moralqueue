@@ -3,18 +3,32 @@ var route = require('./route')
 var main = require('./main')
 var PORT = process.env.PORT || 8000
 
+route.addRule('/getByKey', 'GET', function (req, res) {
+  var key = Object.keys(req['body'])[0]
+  main.getByKey(key, function (value) { res.end(value) })
+})
+
+route.addRule('/getQueue', 'GET', function (req, res) {
+  main.getQueue(function (value) { res.end(value) })
+})
+
 route.addRule('/first', 'GET', function (req, res) {
-  res.end()
+  main.getFirstObj(function (value) { res.end(value) })
+})
+
+route.addRule('/getFirstKey', 'GET', function (req, res) {
+  main.getFirstKey(function (value) { res.end(value) })
 })
 
 route.addRule('/', 'POST', function (req, res) {
-  res.write(req['body'])
-  res.end('\n')
-  //main.queue()
+  var key = Object.keys(req['body'])[0]
+  var value = req['body'][key]
+  res.write('key: ' + key + ' , ' + 'value: ' + value)
+  res.end()
+  main.queue(key, value)
 })
 
 var server = http.createServer(function (req, res) {
-  // should move to a middleware js
   var body = []
   req.on('error', function (err) {
     console.error(err)
