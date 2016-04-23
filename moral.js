@@ -9,7 +9,7 @@ route.addRule('/first', 'GET', function (req, res) {
 
 route.addRule('/', 'POST', function (req, res) {
   res.write('hello you')
-  res.end()
+  res.end('\n')
 })
 
 var server = http.createServer(function (req, res) {
