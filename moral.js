@@ -4,9 +4,12 @@ var redis = require("redis")
 var PORT = process.env.PORT || 8000
 
 route.addRule('/first', 'GET', function (req, res) {
+  res.end()
 })
 
 route.addRule('/', 'POST', function (req, res) {
+  res.write('hello you')
+  res.end()
 })
 
 var server = http.createServer(function (req, res) {

@@ -16,9 +16,8 @@ exports.rout = function (req, res) {
 
   if (routes[URL] !== undefined) {
     if (routes[URL][METHOD] !== undefined) {
-      routes[URL][METHOD](req, res)
       res.writeHead(200)
-      res.end()
+      routes[URL][METHOD](req, res)
     } else {
       res.writeHead(405)
       res.end()
