@@ -17,4 +17,4 @@ POST /getQueueSize [param: queue name as 'queue'] returns the queue size
 
 POST /first [param: queue name as 'queue'] pops the first value of the queue
 
-POST / { key : value }
+POST / [params: queue = queueName, key = keyName, value = valueContext]
