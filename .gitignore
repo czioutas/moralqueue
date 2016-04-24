@@ -1,2 +1,3 @@
 /node_modules
-/redis-stable
+npm-debug.log
+.idea
