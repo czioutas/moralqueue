@@ -12,6 +12,10 @@ route.addRule('/getQueue', 'GET', function (req, res) {
   main.getQueue(function (value) { res.end(value) })
 })
 
+route.addRule('/getQueueSize', 'GET', function (req, res) {
+  main.getQueueSize(function (value) { res.end(value) })
+})
+
 route.addRule('/first', 'GET', function (req, res) {
   main.getFirstObj(function (value) { res.end(value) })
 })

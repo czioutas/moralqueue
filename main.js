@@ -6,6 +6,10 @@ exports.init = function () {
   initialize()
 }
 
+exports.getQueueSize = function (callback) {
+  callback(queue.length + '')
+}
+
 exports.getQueue = function (callback) {
   callback(queue.toString())
 }

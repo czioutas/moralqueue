@@ -4,7 +4,7 @@ var random = require('random-js')()
 
 var enqueueStartTime, enqueueEndTime, dequeueStartTime, dequeueEndTime
 
-function run () {
+function run (callback) {
   var i = 0
   enqueueStartTime = new Date().getTime()
   do {
