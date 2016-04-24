@@ -1,47 +1,71 @@
 var redis = require('redis')
 var client
-var queue = []
+var q = []
 
 exports.init = function () {
   initialize()
 }
 
-exports.getQueueSize = function (callback) {
-  callback(queue.length + '')
+exports.getQueueSize = function (queueName, callback) {
+  if (q[queueName] !== undefined) {
+    callback(q[queueName].length + '')
+  } else {
+    callback(0)
+  }
 }
 
-exports.getQueue = function (callback) {
-  callback(queue.toString())
+exports.getQueue = function (queueName, callback) {
+  if (q[queueName] !== undefined) {
+    callback(q[queueName].toString())
+  } else {
+    callback(0 + '')
+  }
 }
 
-exports.queue = function (key, value) {
-  client.hset(key, 'value', value)
-  queue.push(key)
+exports.queue = function (queueName, key, value) {
+  client.hset(queueName, key, value)
+
+  if (q[queueName] === undefined) {
+    q[queueName] = []
+    q[queueName].push(key)
+  } else {
+    q[queueName].push(key)
+  }
 }
 
-exports.getByKey = function (key, callback) {
-  client.hget(key, 'value', function (err, obj) {
-    callback(obj)
+exports.getFirstObj = function (queueName, callback) {
+  process.nextTick(function () {
+    dequeue(queueName, callback)
   })
 }
 
-exports.getFirstObj = function (callback) {
+function dequeue (queueName, callback) {
   process.nextTick(function () {
-    dequeue(callback)
-  })
-}
-
-function dequeue (callback) {
-  process.nextTick(function () {
-    if (queue.length < 1) {
+    if (q[queueName] === undefined) {
       callback(0)
-    } else {
-      key = queue.shift()
-      client.hget(key, 'value', function (err, obj) {
-        client.hdel(key, 'value')
-        callback(obj)
-      })
+      return
     }
+
+    if (q[queueName].length < 1) {
+      callback(0)
+      return
+    }
+
+    var key = q[queueName].shift()
+    if (key === undefined) {
+      callback(0)
+      return
+    }
+
+    client.hget(queueName, key, function (err, obj) {
+      if (err) {
+        console.error(err)
+        callback(0)
+      }
+
+      client.hdel(queueName, key)
+      callback(obj)
+    })
   })
 }
 

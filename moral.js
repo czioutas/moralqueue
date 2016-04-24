@@ -3,33 +3,29 @@ var route = require('./route')
 var main = require('./main')
 var PORT = process.env.PORT || 8000
 
-route.addRule('/getByKey', 'GET', function (req, res) {
-  var key = Object.keys(req['body'])[0]
-  main.getByKey(key, function (value) { res.end(value) })
+route.addRule('/getQueue', 'POST', function (req, res) {
+  var queue = req.body.queue
+  main.getQueue(queue, function (value) { res.end(value) })
 })
 
-route.addRule('/getQueue', 'GET', function (req, res) {
-  main.getQueue(function (value) { res.end(value) })
+route.addRule('/getQueueSize', 'POST', function (req, res) {
+  var queue = req.body.queue
+  main.getQueueSize(queue, function (value) { res.end(value) })
 })
 
-route.addRule('/getQueueSize', 'GET', function (req, res) {
-  main.getQueueSize(function (value) { res.end(value) })
-})
-
-route.addRule('/first', 'GET', function (req, res) {
-  main.getFirstObj(function (value) { res.end(value) })
-})
-
-route.addRule('/getFirstKey', 'GET', function (req, res) {
-  main.getFirstKey(function (value) { res.end(value) })
+route.addRule('/first', 'POST', function (req, res) {
+  var queue = req.body.queue
+  main.getFirstObj(queue, function (value) { res.end(value) })
 })
 
 route.addRule('/', 'POST', function (req, res) {
-  var key = Object.keys(req['body'])[0]
-  var value = req['body'][key]
-  res.write('key: ' + key + ' , ' + 'value: ' + value)
+  var key = req.body.key
+  var value = req.body.value
+  var queue = req.body.queue
+
+  res.write('key: ' + key + ' , ' + 'value: ' + value + ' , queue: ' + queue)
   res.end()
-  main.queue(key, value)
+  main.queue(queue, key, value)
 })
 
 var server = http.createServer(function (req, res) {
