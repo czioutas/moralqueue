@@ -6,13 +6,13 @@ echo '=== Starting POST requests ===' $DATE
 COUNTER=0
 QUEUE='PRODUCTQUEUE'
 while [  $COUNTER -lt $c ]; do
-  response=$(echo curl --silent --write-out %{http_code} $headers --silent --output /dev/null --data "queue=$QUEUE" 127.0.0.1:8000/first | bash)
+  response=$(echo curl headers --silent -o output1.txt --data "queue=$QUEUE" 127.0.0.1:8000/first | bash)
   echo $response
 
   let COUNTER=COUNTER+1
 done
 
-echo '=== End POST reuqests ========' `date +%Y-%m-%d:%H:%M:%S`
-echo '===' $SECONDS '================='
+##echo '=== End POST reuqests ========' `date +%Y-%m-%d:%H:%M:%S`
+##echo '===' $SECONDS '================='
 
 exit 1

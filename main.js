@@ -23,14 +23,16 @@ exports.getQueue = function (queueName, callback) {
 }
 
 exports.queue = function (queueName, key, value) {
-  client.hset(queueName, key, value)
-
-  if (q[queueName] === undefined) {
-    q[queueName] = []
-    q[queueName].push(key)
-  } else {
-    q[queueName].push(key)
-  }
+  client.hset(queueName, key, value, function (error, result) {
+    if (result === 1) {
+      if (q[queueName] === undefined) {
+        q[queueName] = []
+        q[queueName].push(key)
+      } else {
+        q[queueName].push(key)
+      }
+    }
+  })
 }
 
 exports.getFirstObj = function (queueName, callback) {
@@ -40,33 +42,26 @@ exports.getFirstObj = function (queueName, callback) {
 }
 
 function dequeue (queueName, callback) {
-  process.nextTick(function () {
     if (q[queueName] === undefined) {
-      callback(0)
+      callback(JSON.stringify({code: 0, msg: 'Queue undefined: ' + queueName}))
       return
     }
 
     if (q[queueName].length < 1) {
-      callback(0)
+      callback(JSON.stringify({code: 1, msg: 'Empty queue: ' + queueName}))
       return
     }
 
     var key = q[queueName].shift()
-    if (key === undefined) {
-      callback(0)
-      return
-    }
 
     client.hget(queueName, key, function (err, obj) {
       if (err) {
-        console.error(err)
-        callback(0)
+        callback(JSON.stringify({code: -1, msg: 'An error occured: ' + err}))
       }
 
       client.hdel(queueName, key)
-      callback(obj)
+      callback(JSON.stringify({code: 2, msg: 'success',key: key, value: obj}))
     })
-  })
 }
 
 function initialize () {
