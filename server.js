@@ -1,35 +1,38 @@
-var http = require('http')
-var route = require('./route')
-var main = require('./main')
-var PORT = process.env.PORT || 8000
+const http = require('http')
+const RouterClass = require('./Router')
+const moralQueue = require('./MoralQueue')
+const PORT = process.env.PORT || 8000
 
-route.addRule('/getQueue', 'POST', function (req, res) {
+let myRouter = new RouterClass()
+var mQ = new moralQueue()
+
+myRouter.addRoute('/getQueue', 'POST', function (req, res) {
   var queue = req.body.queue
-  main.getQueue(queue, function (value) { res.end(value) })
+  mQ.getQueue(queue, function (value) { res.end(value) })
 })
 
-route.addRule('/getQueueSize', 'POST', function (req, res) {
+myRouter.addRoute('/getQueueSize', 'POST', function (req, res) {
   var queue = req.body.queue
-  main.getQueueSize(queue, function (value) { res.end(value) })
+  mQ.getQueueSize(queue, function (value) { res.end(value) })
 })
 
-route.addRule('/first', 'POST', function (req, res) {
+myRouter.addRoute('/first', 'POST', function (req, res) {
   var queue = req.body.queue
-  main.getFirstObj(queue, function (value) { res.end(value) })
+  mQ.getFirstObj(queue, function (value) { res.end(value) })
 })
 
-route.addRule('/', 'POST', function (req, res) {
+myRouter.addRoute('/', 'POST', function (req, res) {
   var key = req.body.key
   var value = req.body.value
   var queue = req.body.queue
 
   res.write('key: ' + key + ' , ' + 'value: ' + value + ' , queue: ' + queue)
   res.end()
-  main.queue(queue, key, value)
+  mQ.queue(queue, key, value)
 })
 
-var server = http.createServer(function (req, res) {
-  var body = []
+const server = http.createServer(function (req, res) {
+  let body = []
   req.on('error', function (err) {
     console.error(err)
     res.statusCode = 400
@@ -38,12 +41,11 @@ var server = http.createServer(function (req, res) {
     body.push(chunk)
   }).on('end', function () {
     req['body'] = toJSON(Buffer.concat(body).toString())
-    route.rout(req, res)
+    myRouter.route(req, res)
   })
 })
 
 server.listen(PORT)
-main.init()
 console.log('Server is running under port ' + PORT)
 
 function toJSON (body) {
