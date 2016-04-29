@@ -4,7 +4,7 @@ const moralQueue = require('./MoralQueue')
 const PORT = process.env.PORT || 8000
 
 let myRouter = new RouterClass()
-var mQ = new moralQueue()
+let mQ = new moralQueue()
 
 myRouter.addRoute('/getQueue', 'POST', function (req, res) {
   var queue = req.body.queue
